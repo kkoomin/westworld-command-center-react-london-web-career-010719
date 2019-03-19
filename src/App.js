@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './stylesheets/App.css'
 import { Segment } from 'semantic-ui-react';
+import { Log } from '../src/services/Log.js'
+
 import WestworldMap from './components/WestworldMap';
 import Headquarters from './components/Headquarters';
 
@@ -12,7 +14,8 @@ class App extends Component {
   state = {
     hosts: [],
     areas: [],
-    selectedHost: undefined
+    selectedHost: undefined,
+    logs: []
   }
   
   componentDidMount() {
@@ -39,6 +42,43 @@ class App extends Component {
     })
   }
 
+  toggleAllActiveStatus = (type) => {
+    return this.state.hosts.map(host => { return {...host, active: type}})
+  }
+
+  activateAll = (event) => {
+    const btn = event.target
+    if (btn.classList.contains('red')) {
+      btn.innerText = 'Decommission All'
+      btn.classList.remove('red')
+      btn.classList.add('green')
+      this.setState({
+        ...this.state,
+        hosts: this.toggleAllActiveStatus(true),
+        selectedHost: undefined,
+        logs: [Log.warn("Activating all hosts!")].concat(this.state.logs)
+      })
+      
+    } else {
+      btn.innerText = 'Activate All'
+      btn.classList.remove('green')
+      btn.classList.add('red')
+      this.setState({
+        ...this.state,
+        hosts: this.toggleAllActiveStatus(false),
+        selectedHost: undefined,
+        logs: [Log.notify("Decommissiong all hosts.")].concat(this.state.logs)
+        })
+    }
+  }
+
+  writeLog = (log) => {
+    this.setState({
+      ...this.state,
+      logs: [log].concat(this.state.logs)
+    })
+  }
+
   render(){
     return (
       <Segment id='app'>
@@ -52,7 +92,10 @@ class App extends Component {
           areas={this.state.areas} 
           selectedHost={this.state.selectedHost} 
           selectHost={this.selectHost} 
-          changeHostStatus={this.changeHostStatus}/>
+          changeHostStatus={this.changeHostStatus}
+          activateAll={this.activateAll}
+          writeLog={this.writeLog}
+          logs={this.state.logs}/>
       </Segment>
     )
   }

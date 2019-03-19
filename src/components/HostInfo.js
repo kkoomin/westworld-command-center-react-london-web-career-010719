@@ -1,12 +1,18 @@
 import '../stylesheets/HostInfo.css'
 import React, { Component } from 'react'
 import { Radio, Icon, Card, Grid, Image, Dropdown, Divider } from 'semantic-ui-react'
+import { Log } from '../services/Log'
 
-// props = {host, hosts, areas, changeHostStatus, selectedHost}
+
+// props = {host, hosts, areas, changeHostStatus, writeLog}
 class HostInfo extends Component {
   state = {
     options: this.props.areas.map(area => {return {key: area.id, text: area.name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '), value: area.name}}),
-    value: this.props.host.area, // area
+    value: this.props.host.area // area
+  }
+
+  areaNaming = (name) => {
+    return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
   }
 
   handleChange = (event, {value}) => {
@@ -14,8 +20,10 @@ class HostInfo extends Component {
     if (this.props.hosts.filter(host => host.area === value).length < selectedArea.limit) {
       this.props.host.area = value
       this.props.changeHostStatus(this.props.host)
+      this.props.writeLog(Log.notify(`${this.props.host.firstName} set in area ${this.areaNaming(value)}`))
+
     } else {
-      alert("Too many hosts in this area. Try another area.")
+      this.props.writeLog(Log.error(`Too many hosts. Cannot add ${this.props.host.firstName} to ${this.areaNaming(value)}`))
     }
 
   }
@@ -24,6 +32,11 @@ class HostInfo extends Component {
     this.props.host.active = !this.props.host.active
     event.target.label = this.props.host.active === true ? 'Active' : 'Decommissioned'
     this.props.changeHostStatus(this.props.host)
+    if (event.target.label === 'Active') {
+      this.props.writeLog(Log.warn(`Activated ${this.props.host.firstName}`))
+    } else {
+      this.props.writeLog(Log.notify(`Decommissoned ${this.props.host.firstName}`))
+    }
   }
 
   render(){

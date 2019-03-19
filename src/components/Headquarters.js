@@ -7,7 +7,7 @@ import HostInfo from './HostInfo'
 import LogPanel from './LogPanel'
 
 
-const Headquarters = ({hosts, areas, selectedHost, selectHost, changeHostStatus}) => {
+const Headquarters = ({hosts, areas, selectedHost, selectHost, changeHostStatus, activateAll, writeLog, logs}) => {
 
   const decommissionedHost = hosts.filter(host => host.active === false)
 
@@ -26,11 +26,11 @@ const Headquarters = ({hosts, areas, selectedHost, selectHost, changeHostStatus}
             hosts={hosts}
             areas={areas} 
             changeHostStatus={changeHostStatus} 
-            selectedHost={selectedHost}/> : 
+            writeLog={writeLog}/> : 
           <Details />}
       </Grid.Column>
       <Grid.Column width={3}>
-        <LogPanel />
+        <LogPanel activateAll={activateAll} logs={logs}/>
       </Grid.Column>
     </Grid>
   )
