@@ -1,31 +1,40 @@
 import React, { Component } from 'react';
 import '../stylesheets/Headquarters.css';
 import { Grid } from 'semantic-ui-react';
+import ColdStorage from './ColdStorage'
 import Details from './Details'
+import HostInfo from './HostInfo'
+import LogPanel from './LogPanel'
 
 
-class Headquarters extends Component {
-  // Remember, there's many ways to do this. This doesn't have to be a class component. It's up to you.
+const Headquarters = ({hosts, areas, selectedHost, selectHost, changeHostStatus}) => {
 
-  render(){
-    return(
-      <Grid celled='internally'>
-        <Grid.Column width={8}>
+  const decommissionedHost = hosts.filter(host => host.active === false)
 
-        {/* Something goes here.... */}
+  return(
+    <Grid celled='internally'>
+      <Grid.Column width={8}>
+        <ColdStorage 
+          decommissionedHost={decommissionedHost} 
+          selectHost={selectHost}
+          selectedHost={selectedHost}/>
+      </Grid.Column>
+      <Grid.Column width={5}>
+        {selectedHost ? 
+          <HostInfo 
+            host={selectedHost} 
+            hosts={hosts}
+            areas={areas} 
+            changeHostStatus={changeHostStatus} 
+            selectedHost={selectedHost}/> : 
+          <Details />}
+      </Grid.Column>
+      <Grid.Column width={3}>
+        <LogPanel />
+      </Grid.Column>
+    </Grid>
+  )
 
-        </Grid.Column>
-        <Grid.Column width={5}>
-          <Details />
-        </Grid.Column>
-        <Grid.Column width={3}>
-
-        {/* and here. Take visual cues from the screenshot/video in the Readme. */}
-
-        </Grid.Column>
-      </Grid>
-    )
-  }
 }
 
 export default Headquarters;
